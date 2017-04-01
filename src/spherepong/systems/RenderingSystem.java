@@ -93,14 +93,14 @@ public class RenderingSystem extends EntitySystem {
 	glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE); // the window will be resizable
 
 	// Create the window
-	window = glfwCreateWindow(this.width, this.height, this.windowTitle, NULL, NULL); // FIXME this is hardcoded
-	if (window == NULL)
+	this.window = glfwCreateWindow(this.width, this.height, this.windowTitle, NULL, NULL);
+	if (this.window == NULL)
 	    throw new RuntimeException("Failed to create the GLFW window");
 
 	// Setup a key callback. It will be called every time a key is pressed, repeated or released.
-	glfwSetKeyCallback(window, (window, key, scancode, action, mods) -> {
+	glfwSetKeyCallback(this.window, (window, key, scancode, action, mods) -> {
 	    if (key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE)
-		glfwSetWindowShouldClose(window, true); // We will detect this in the rendering loop
+		glfwSetWindowShouldClose(this.window, true); // We will detect this in the rendering loop
 	});
 
 	// Get the thread stack and push a new frame
@@ -109,22 +109,23 @@ public class RenderingSystem extends EntitySystem {
 	    IntBuffer pHeight = stack.mallocInt(1); // int*
 
 	    // Get the window size passed to glfwCreateWindow
-	    glfwGetWindowSize(window, pWidth, pHeight);
+	    glfwGetWindowSize(this.window, pWidth, pHeight);
 
 	    // Get the resolution of the primary monitor
 	    GLFWVidMode vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
 
 	    // Center the window
-	    glfwSetWindowPos(window, (vidmode.width() - pWidth.get(0)) / 2, (vidmode.height() - pHeight.get(0)) / 2);
+	    glfwSetWindowPos(this.window, (vidmode.width() - pWidth.get(0)) / 2,
+		    (vidmode.height() - pHeight.get(0)) / 2);
 	} // the stack frame is popped automatically
 
 	// Make the OpenGL context current
-	glfwMakeContextCurrent(window);
+	glfwMakeContextCurrent(this.window);
 	// Enable v-sync
 	glfwSwapInterval(1);
 
 	// Make the window visible
-	glfwShowWindow(window);
+	glfwShowWindow(this.window);
 
 	// This line is critical for LWJGL's interoperation with GLFW's OpenGL context, or any context that is managed
 	// externally. LWJGL detects the context that is current in the current thread, creates the GLCapabilities
@@ -163,7 +164,7 @@ public class RenderingSystem extends EntitySystem {
 	}
 
 	// Swap the color buffers
-	glfwSwapBuffers(window);
+	glfwSwapBuffers(this.window);
     }
 
     @Override
@@ -171,8 +172,8 @@ public class RenderingSystem extends EntitySystem {
 	super.dispose();
 	LOGGER.info("Shutting down rendering system");
 	// Free the window callbacks and destroy the window
-	glfwFreeCallbacks(window);
-	glfwDestroyWindow(window);
+	glfwFreeCallbacks(this.window);
+	glfwDestroyWindow(this.window);
 
 	// Terminate GLFW and free the error callback
 	glfwTerminate();

@@ -4,7 +4,6 @@ import org.testng.annotations.Test;
 
 import com.artemis.Entity;
 import com.artemis.World;
-import com.artemis.WorldConfiguration;
 import com.artemis.WorldConfigurationBuilder;
 
 import spherepong.UnitTest;
@@ -22,7 +21,7 @@ public class MovementSystemTest extends UnitTest {
 	world.process();
 
 	Position position = entity.getComponent(Position.class);
-	assertEquals(position.position, new Position(2, 2, 3).position);
+	assertEqualComponents(position, new Position(2, 2, 3));
     }
 
 }

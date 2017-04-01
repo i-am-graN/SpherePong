@@ -3,11 +3,15 @@ package spherepong;
 import com.artemis.Entity;
 import com.artemis.World;
 
+import spherepong.components.BoundingBox;
 import spherepong.components.Position;
 import spherepong.components.Renderable;
 import spherepong.components.Velocity;
 
 public class EntityFactory {
+
+    private static final int BALL_DIAMETER = 20;
+    private static final int WALL_THICKNESS = 20;
 
     private World world;
 
@@ -16,8 +20,30 @@ public class EntityFactory {
     }
 
     public Entity createBall(float x, float y, float z) {
-	Entity entity = world.createEntity();
-	entity.edit().add(new Position(x, y, z)).add(new Renderable(10, 10)).add(new Velocity(1, 1, 0));
+	Entity entity = this.world.createEntity();
+	entity.edit().add(new BoundingBox(BALL_DIAMETER, BALL_DIAMETER)).add(new Position(x, y, z)).add(new Renderable(BALL_DIAMETER, BALL_DIAMETER)).add(new Velocity(10, 10, 0));
+	return entity;
+    }
+
+    public Entity createTopWall() {
+	Entity entity = this.world.createEntity();
+	entity.edit().add(new BoundingBox(SpherePong.WINDOW_WIDTH, WALL_THICKNESS)).add(new Renderable(SpherePong.WINDOW_WIDTH, WALL_THICKNESS)).add(new Position(0, SpherePong.WINDOW_HEIGHT - WALL_THICKNESS, 0));
+	return entity;
+    }
+
+    public Entity createBottomWall() {
+	Entity entity = this.world.createEntity();
+	entity.edit().add(new BoundingBox(SpherePong.WINDOW_WIDTH, WALL_THICKNESS)).add(new Renderable(SpherePong.WINDOW_WIDTH, WALL_THICKNESS)).add(new Position(0, 0, 0));
+	return entity;
+    }
+    public Entity createRightWall() {
+	Entity entity = this.world.createEntity();
+	entity.edit().add(new BoundingBox(WALL_THICKNESS, SpherePong.WINDOW_HEIGHT)).add(new Renderable(WALL_THICKNESS, SpherePong.WINDOW_HEIGHT)).add(new Position(SpherePong.WINDOW_WIDTH - WALL_THICKNESS, 0, 0));
+	return entity;
+    }
+    public Entity createLeftWall() {
+	Entity entity = this.world.createEntity();
+	entity.edit().add(new BoundingBox(WALL_THICKNESS, SpherePong.WINDOW_HEIGHT)).add(new Renderable(WALL_THICKNESS, SpherePong.WINDOW_HEIGHT)).add(new Position(0, 0, 0));
 	return entity;
     }
 }

@@ -6,7 +6,9 @@ import com.artemis.WorldConfigurationBuilder;
 
 import spherepong.components.Position;
 import spherepong.components.Renderable;
+import spherepong.components.Velocity;
 import spherepong.exceptions.SystemExitException;
+import spherepong.systems.MovementSystem;
 import spherepong.systems.RenderingSystem;
 
 public class SpherePong extends Thread {
@@ -23,7 +25,9 @@ public class SpherePong extends Thread {
     public void initialize() {
 
 	WorldConfiguration config = new WorldConfigurationBuilder()
-		.with(new RenderingSystem(WINDOW_WIDTH, WINDOW_HEIGHT, "SpherePong")).build();
+		.with(new RenderingSystem(WINDOW_WIDTH, WINDOW_HEIGHT, "SpherePong"))
+		.with(new MovementSystem())
+		.build();
 
 	world = new World(config);
 

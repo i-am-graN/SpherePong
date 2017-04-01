@@ -169,6 +169,7 @@ public class RenderingSystem extends EntitySystem {
     @Override
     protected void dispose() {
 	super.dispose();
+	LOGGER.info("Shutting down rendering system");
 	// Free the window callbacks and destroy the window
 	glfwFreeCallbacks(window);
 	glfwDestroyWindow(window);
@@ -182,10 +183,10 @@ public class RenderingSystem extends EntitySystem {
 	glColor3f(0.25f, 0.75f, 0.5f);
 	glBegin(GL_QUADS);
 	{
-	    glVertex2f(position.x, position.y);
-	    glVertex2f(position.x, position.y + height);
-	    glVertex2f(position.x + width, position.y + height);
-	    glVertex2f(position.x + width, position.y);
+	    glVertex2f(position.position.x, position.position.y);
+	    glVertex2f(position.position.x, position.position.y + height);
+	    glVertex2f(position.position.x + width, position.position.y + height);
+	    glVertex2f(position.position.x + width, position.position.y);
 	}
 	glEnd();
     }

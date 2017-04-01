@@ -158,7 +158,8 @@ public class RenderingSystem extends EntitySystem {
 
 	for (Entity e : this.getEntities()) {
 	    Position position = e.getComponent(Position.class);
-	    drawRectangle(position, 10);
+	    Renderable renderable = e.getComponent(Renderable.class);
+	    drawRectangle(position, renderable.width, renderable.height);
 	}
 
 	// Swap the color buffers
@@ -177,14 +178,13 @@ public class RenderingSystem extends EntitySystem {
 	glfwSetErrorCallback(null).free();
     }
 
-    private void drawRectangle(Position position, float width) {
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    private void drawRectangle(Position position, float width, float height) {
 	glColor3f(0.25f, 0.75f, 0.5f);
 	glBegin(GL_QUADS);
 	{
 	    glVertex2f(position.x, position.y);
-	    glVertex2f(position.x, position.y + width);
-	    glVertex2f(position.x + width, position.y + width);
+	    glVertex2f(position.x, position.y + height);
+	    glVertex2f(position.x + width, position.y + height);
 	    glVertex2f(position.x + width, position.y);
 	}
 	glEnd();

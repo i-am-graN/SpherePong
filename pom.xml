@@ -267,11 +267,16 @@
 			<classifier>${lwjgl.natives}</classifier>
 			<scope>runtime</scope>
 		</dependency>
-	<dependency>
-		<groupId>org.joml</groupId>
-		<artifactId>joml</artifactId>
-		<version>${joml.version}</version>
-	</dependency>
+		<dependency>
+			<groupId>org.joml</groupId>
+			<artifactId>joml</artifactId>
+			<version>${joml.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.testng</groupId>
+			<artifactId>testng</artifactId>
+			<version>6.11</version>
+		</dependency>
 	</dependencies>
 
 	<profiles>

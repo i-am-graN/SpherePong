@@ -12,5 +12,6 @@
 hs_err_pid*
 
 # Folders
-/bin/
-/target/
+bin/
+target/
+test-output/

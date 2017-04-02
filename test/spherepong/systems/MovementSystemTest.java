@@ -16,12 +16,12 @@ public class MovementSystemTest extends UnitTest {
     public void testMovementSystemMoves() {
 	World world = new World(new WorldConfigurationBuilder().with(new MovementSystem()).build());
 	Entity entity = world.createEntity();
-	entity.edit().add(new Position(1, 0, 0)).add(new Velocity(1, 2, 3));
+	entity.edit().add(new Position(1, 2, 3)).add(new Velocity(1, 2, 3));
 
 	world.process();
 
 	Position position = entity.getComponent(Position.class);
-	assertEqualComponents(position, new Position(2, 2, 3));
+	assertEqualComponents(position, new Position(2, 4, 6));
     }
 
 }

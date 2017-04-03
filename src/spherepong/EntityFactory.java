@@ -2,8 +2,10 @@ package spherepong;
 
 import com.artemis.Entity;
 import com.artemis.World;
+import com.artemis.managers.GroupManager;
 
 import spherepong.components.BoundingBox;
+import spherepong.components.PlayerAI;
 import spherepong.components.Position;
 import spherepong.components.Renderable;
 import spherepong.components.Velocity;
@@ -12,7 +14,11 @@ public class EntityFactory {
 
     private static final int BALL_DIAMETER = 20;
     private static final int WALL_THICKNESS = 20;
-
+    private static final int PLAYER_WIDTH = WALL_THICKNESS;
+    private static final int PLAYER_LENGTH = PLAYER_WIDTH * 7;
+    
+    public static final String ENTITY_BALL = "BALL";
+    
     private World world;
 
     public EntityFactory(World world) {
@@ -21,7 +27,8 @@ public class EntityFactory {
 
     public Entity createBall(float x, float y, float z) {
 	Entity entity = this.world.createEntity();
-	entity.edit().add(new BoundingBox(BALL_DIAMETER, BALL_DIAMETER)).add(new Position(x, y, z)).add(new Renderable(BALL_DIAMETER, BALL_DIAMETER)).add(new Velocity(10, 10, 0));
+	entity.edit().add(new BoundingBox(BALL_DIAMETER, BALL_DIAMETER)).add(new Position(x, y, z)).add(new Renderable(BALL_DIAMETER, BALL_DIAMETER)).add(new Velocity(2, 2, 0));
+	this.world.getSystem(GroupManager.class).add(entity, ENTITY_BALL);
 	return entity;
     }
 
@@ -36,14 +43,18 @@ public class EntityFactory {
 	entity.edit().add(new BoundingBox(SpherePong.WINDOW_WIDTH, WALL_THICKNESS)).add(new Renderable(SpherePong.WINDOW_WIDTH, WALL_THICKNESS)).add(new Position(0, 0, 0));
 	return entity;
     }
-    public Entity createRightWall() {
+    public Entity createPlayerA() {
 	Entity entity = this.world.createEntity();
-	entity.edit().add(new BoundingBox(WALL_THICKNESS, SpherePong.WINDOW_HEIGHT)).add(new Renderable(WALL_THICKNESS, SpherePong.WINDOW_HEIGHT)).add(new Position(SpherePong.WINDOW_WIDTH - WALL_THICKNESS, 0, 0));
+	float xPos = 0;
+	float yPos = SpherePong.WINDOW_HEIGHT / 2 - PLAYER_LENGTH / 2;
+	entity.edit().add(new BoundingBox(PLAYER_WIDTH, PLAYER_LENGTH)).add(new Renderable(PLAYER_WIDTH, PLAYER_LENGTH)).add(new Position(xPos, yPos, 0)).add(new Velocity(0, 0, 0)).add(new PlayerAI());
 	return entity;
     }
-    public Entity createLeftWall() {
+    public Entity createPlayerB() {
 	Entity entity = this.world.createEntity();
-	entity.edit().add(new BoundingBox(WALL_THICKNESS, SpherePong.WINDOW_HEIGHT)).add(new Renderable(WALL_THICKNESS, SpherePong.WINDOW_HEIGHT)).add(new Position(0, 0, 0));
+	float xPos = SpherePong.WINDOW_WIDTH - PLAYER_WIDTH;
+	float yPos = SpherePong.WINDOW_HEIGHT / 2 - PLAYER_LENGTH / 2;
+	entity.edit().add(new BoundingBox(PLAYER_WIDTH, PLAYER_LENGTH)).add(new Renderable(PLAYER_WIDTH, PLAYER_LENGTH)).add(new Position(xPos, yPos, 0)).add(new Velocity(0, 0, 0)).add(new PlayerAI());
 	return entity;
     }
 }

@@ -3,10 +3,12 @@ package spherepong;
 import com.artemis.World;
 import com.artemis.WorldConfiguration;
 import com.artemis.WorldConfigurationBuilder;
+import com.artemis.managers.GroupManager;
 
 import spherepong.exceptions.SystemExitException;
 import spherepong.systems.CollisionSystem;
 import spherepong.systems.MovementSystem;
+import spherepong.systems.PlayerAISystem;
 import spherepong.systems.RenderingSystem;
 
 public class SpherePong extends Thread {
@@ -24,7 +26,9 @@ public class SpherePong extends Thread {
     public void initialize() {
 
 	WorldConfiguration config = new WorldConfigurationBuilder()
+		.with(new GroupManager())
 		.with(new CollisionSystem())
+		.with(new PlayerAISystem())
 		.with(new MovementSystem())
 		.with(new RenderingSystem(WINDOW_WIDTH, WINDOW_HEIGHT, "SpherePong"))
 		.build();
@@ -39,8 +43,10 @@ public class SpherePong extends Thread {
 	// Walls
 	factory.createTopWall();
 	factory.createBottomWall();
-	factory.createRightWall();
-	factory.createLeftWall();
+	
+	// Players
+	factory.createPlayerA();
+	factory.createPlayerB();
     }
 
     @Override

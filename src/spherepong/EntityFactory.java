@@ -14,8 +14,8 @@ public class EntityFactory {
 
     private static final int BALL_DIAMETER = 20;
     private static final int WALL_THICKNESS = 20;
-    private static final int PLAYER_WIDTH = WALL_THICKNESS;
-    private static final int PLAYER_LENGTH = PLAYER_WIDTH * 7;
+    public static final int PLAYER_WIDTH = WALL_THICKNESS;
+    public static final int PLAYER_LENGTH = PLAYER_WIDTH * 7;
     
     public static final String ENTITY_BALL = "BALL";
     

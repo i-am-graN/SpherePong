@@ -29,9 +29,10 @@ import static org.lwjgl.glfw.GLFW.glfwWindowShouldClose;
 import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.GL_DEPTH_TEST;
+import static org.lwjgl.opengl.GL11.GL_LINES;
 import static org.lwjgl.opengl.GL11.GL_MODELVIEW;
 import static org.lwjgl.opengl.GL11.GL_PROJECTION;
-import static org.lwjgl.opengl.GL11.GL_QUADS;
+import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL11.glBegin;
 import static org.lwjgl.opengl.GL11.glClear;
 import static org.lwjgl.opengl.GL11.glClearColor;
@@ -41,13 +42,14 @@ import static org.lwjgl.opengl.GL11.glEnd;
 import static org.lwjgl.opengl.GL11.glLoadIdentity;
 import static org.lwjgl.opengl.GL11.glMatrixMode;
 import static org.lwjgl.opengl.GL11.glOrtho;
-import static org.lwjgl.opengl.GL11.glVertex2f;
+import static org.lwjgl.opengl.GL11.glVertex3f;
 import static org.lwjgl.system.MemoryStack.stackPush;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
 import java.nio.IntBuffer;
 import java.util.logging.Logger;
 
+import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
@@ -57,6 +59,8 @@ import com.artemis.Aspect;
 import com.artemis.Entity;
 import com.artemis.EntitySystem;
 
+import spherepong.Camera;
+import spherepong.SpherePong;
 import spherepong.components.Position;
 import spherepong.components.Renderable;
 import spherepong.exceptions.SystemExitException;
@@ -64,7 +68,9 @@ import spherepong.exceptions.SystemExitException;
 public class RenderingSystem extends EntitySystem {
 
     private static final Logger LOGGER = Logger.getLogger(RenderingSystem.class.getName());
+    private static final boolean DEBUG = true;
     private long window;
+    private Camera camera;
     private int width, height;
     private String windowTitle;
 
@@ -133,16 +139,23 @@ public class RenderingSystem extends EntitySystem {
 	GL.createCapabilities();
 
 	// Set the clear color
-	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	glOrtho(0, this.width, 0, this.height, 1, -1);
 	glMatrixMode(GL_MODELVIEW);
 
-	glClearColor(0, 0, 0, 1);
+//	glDisable(GL_DEPTH_TEST);
+	initCamera();
+    }
 
-	glDisable(GL_DEPTH_TEST);
+    private void initCamera() {
+	camera = new Camera(70, SpherePong.WINDOW_WIDTH / SpherePong.WINDOW_HEIGHT, 0.3f, 1000);
+	camera.initialize();
+	camera.setPosition(new Vector3f(SpherePong.WINDOW_WIDTH / 2, SpherePong.WINDOW_HEIGHT / 2, 800));
+	camera.setRotation(new Vector3f(180, 0, 0));
+	camera.useView();
     }
 
     @Override
@@ -181,13 +194,38 @@ public class RenderingSystem extends EntitySystem {
     }
 
     private void drawRectangle(Position position, float width, float height) {
-	glColor3f(0.25f, 0.75f, 0.5f);
+	if (DEBUG) {
+	    drawBoundingBox(position, width, height);
+	}
+
 	glBegin(GL_QUADS);
 	{
-	    glVertex2f(position.position.x, position.position.y);
-	    glVertex2f(position.position.x, position.position.y + height);
-	    glVertex2f(position.position.x + width, position.position.y + height);
-	    glVertex2f(position.position.x + width, position.position.y);
+	    glColor3f(0.9f, 0.0f, 0.0f);
+	    glVertex3f(position.position.x, position.position.y, 0);
+	    glVertex3f(position.position.x, position.position.y + height, 0);
+	    glVertex3f(position.position.x + width, position.position.y + height, 0);
+	    glVertex3f(position.position.x + width, position.position.y, 0);
+
+	    // Just testing adding a layer to see depth
+	    float depth = 10;
+	    glColor3f(0.0f, 0.0f, 0.9f);
+	    glVertex3f(position.position.x, position.position.y, depth);
+	    glVertex3f(position.position.x, position.position.y + height, depth);
+	    glVertex3f(position.position.x + width, position.position.y + height, depth);
+	    glVertex3f(position.position.x + width, position.position.y, depth);
+	}
+	glEnd();
+    }
+
+    private void drawBoundingBox(Position position, float width, float height) {
+	glLineWidth(1);
+	glColor3f(0.0f, 1.0f, 0.0f);
+	glBegin(GL_LINES);
+	{
+	    glVertex3f(position.position.x, position.position.y, 0);
+	    glVertex3f(position.position.x, position.position.y + height, 0);
+	    glVertex3f(position.position.x + width, position.position.y + height, 0);
+	    glVertex3f(position.position.x + width, position.position.y, 0);
 	}
 	glEnd();
     }

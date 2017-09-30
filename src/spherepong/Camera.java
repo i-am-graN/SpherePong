@@ -32,7 +32,7 @@ public class Camera {
 	glRotatef(rotation.z, 0, 0, 1);
 	
 	// Set position
-	glTranslatef(position.x, position.y, position.z);
+	glTranslatef(-position.x, -position.y, -position.z);
     }
 
     public void initialize() {

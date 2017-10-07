@@ -164,7 +164,7 @@ public class RenderingSystem extends EntitySystem {
 
 	// Clear the frame buffer
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	drawDebugLines(100);
+	drawDebugLines(SpherePong.WINDOW_WIDTH, SpherePong.WINDOW_HEIGHT, SpherePong.WINDOW_WIDTH, 100);
 
 	for (Entity e : this.getEntities()) {
 	    Position position = e.getComponent(Position.class);
@@ -193,13 +193,13 @@ public class RenderingSystem extends EntitySystem {
 	glBegin(GL_QUADS);
 	{
 	    // Just testing adding a layer to see depth
-	    float depth = -10;
+	    float depth = -100;
 	    glColor3f(0.0f, 0.0f, 0.8f);
 	    glVertex3f(position.position.x, position.position.y, depth);
 	    glVertex3f(position.position.x, position.position.y + height, depth);
 	    glVertex3f(position.position.x + width, position.position.y + height, depth);
 	    glVertex3f(position.position.x + width, position.position.y, depth);
-	    
+
 	    glColor3f(0.0f, 0.0f, 1.0f);
 	    glVertex3f(position.position.x, position.position.y, 0);
 	    glVertex3f(position.position.x, position.position.y + height, 0);
@@ -233,14 +233,22 @@ public class RenderingSystem extends EntitySystem {
 	glEnd();
     }
 
-    private void drawDebugLines(int spacing) {
+    private void drawDebugLines(int width, int height, int depth, int spacing) {
 	glLineWidth(1.0f);
 	glColor3f(0.8f, 0.8f, 0.8f);
 	glBegin(GL_LINES);
 	{
-	    for (int x = 0; x <= SpherePong.WINDOW_WIDTH; x += spacing) {
-		glVertex3f(x, 0, 0);
-		glVertex3f(x, SpherePong.WINDOW_HEIGHT, 0);
+	    for (int i = 0; i <= width; i += spacing) {
+		for (int j = 0; j <= height; j += spacing) {
+		    glVertex3f(0, i, j);
+		    glVertex3f(width, i, j);
+
+		    glVertex3f(i, 0, j);
+		    glVertex3f(i, height, j);
+
+		    glVertex3f(i, j, 0);
+		    glVertex3f(i, j, depth);
+		}
 	    }
 	}
 	glEnd();

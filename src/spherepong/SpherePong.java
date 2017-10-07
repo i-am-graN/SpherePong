@@ -20,9 +20,6 @@ public class SpherePong extends Thread {
 
     private World world;
 
-    public SpherePong() {
-    }
-
     public void initialize() {
 
 	WorldConfiguration config = new WorldConfigurationBuilder()

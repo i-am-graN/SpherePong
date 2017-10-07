@@ -29,9 +29,10 @@ import static org.lwjgl.glfw.GLFW.glfwWindowShouldClose;
 import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.GL_DEPTH_TEST;
+import static org.lwjgl.opengl.GL11.GL_LINES;
 import static org.lwjgl.opengl.GL11.GL_MODELVIEW;
 import static org.lwjgl.opengl.GL11.GL_PROJECTION;
-import static org.lwjgl.opengl.GL11.GL_QUADS;
+import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL11.glBegin;
 import static org.lwjgl.opengl.GL11.glClear;
 import static org.lwjgl.opengl.GL11.glClearColor;
@@ -41,13 +42,14 @@ import static org.lwjgl.opengl.GL11.glEnd;
 import static org.lwjgl.opengl.GL11.glLoadIdentity;
 import static org.lwjgl.opengl.GL11.glMatrixMode;
 import static org.lwjgl.opengl.GL11.glOrtho;
-import static org.lwjgl.opengl.GL11.glVertex2f;
+import static org.lwjgl.opengl.GL11.glVertex3f;
 import static org.lwjgl.system.MemoryStack.stackPush;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
 import java.nio.IntBuffer;
 import java.util.logging.Logger;
 
+import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
@@ -57,6 +59,8 @@ import com.artemis.Aspect;
 import com.artemis.Entity;
 import com.artemis.EntitySystem;
 
+import spherepong.Camera;
+import spherepong.SpherePong;
 import spherepong.components.Position;
 import spherepong.components.Renderable;
 import spherepong.exceptions.SystemExitException;
@@ -64,7 +68,9 @@ import spherepong.exceptions.SystemExitException;
 public class RenderingSystem extends EntitySystem {
 
     private static final Logger LOGGER = Logger.getLogger(RenderingSystem.class.getName());
+    private static final boolean DEBUG = true;
     private long window;
+    private Camera camera;
     private int width, height;
     private String windowTitle;
 
@@ -133,16 +139,18 @@ public class RenderingSystem extends EntitySystem {
 	GL.createCapabilities();
 
 	// Set the clear color
-	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	glOrtho(0, this.width, 0, this.height, 1, -1);
-	glMatrixMode(GL_MODELVIEW);
+	glEnable(GL_DEPTH_TEST);
+	initCamera();
+    }
 
-	glClearColor(0, 0, 0, 1);
-
-	glDisable(GL_DEPTH_TEST);
+    private void initCamera() {
+	camera = new Camera(70, SpherePong.WINDOW_WIDTH / SpherePong.WINDOW_HEIGHT, 0.3f, 1000);
+	camera.initialize();
+	camera.setPosition(new Vector3f(SpherePong.WINDOW_WIDTH / 2, SpherePong.WINDOW_HEIGHT / 2, 800));
+	camera.setRotation(new Vector3f(0, 0, 0));
+	camera.useView();
     }
 
     @Override
@@ -154,8 +162,9 @@ public class RenderingSystem extends EntitySystem {
 	    throw new SystemExitException();
 	}
 
-	// Clear the framebuffer
+	// Clear the frame buffer
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	drawDebugLines(SpherePong.WINDOW_WIDTH, SpherePong.WINDOW_HEIGHT, SpherePong.WINDOW_WIDTH, 100);
 
 	for (Entity e : this.getEntities()) {
 	    Position position = e.getComponent(Position.class);
@@ -181,13 +190,66 @@ public class RenderingSystem extends EntitySystem {
     }
 
     private void drawRectangle(Position position, float width, float height) {
-	glColor3f(0.25f, 0.75f, 0.5f);
 	glBegin(GL_QUADS);
 	{
-	    glVertex2f(position.position.x, position.position.y);
-	    glVertex2f(position.position.x, position.position.y + height);
-	    glVertex2f(position.position.x + width, position.position.y + height);
-	    glVertex2f(position.position.x + width, position.position.y);
+	    // Just testing adding a layer to see depth
+	    float depth = -100;
+	    glColor3f(0.0f, 0.0f, 0.8f);
+	    glVertex3f(position.position.x, position.position.y, depth);
+	    glVertex3f(position.position.x, position.position.y + height, depth);
+	    glVertex3f(position.position.x + width, position.position.y + height, depth);
+	    glVertex3f(position.position.x + width, position.position.y, depth);
+
+	    glColor3f(0.0f, 0.0f, 1.0f);
+	    glVertex3f(position.position.x, position.position.y, 0);
+	    glVertex3f(position.position.x, position.position.y + height, 0);
+	    glVertex3f(position.position.x + width, position.position.y + height, 0);
+	    glVertex3f(position.position.x + width, position.position.y, 0);
+	}
+	glEnd();
+
+	if (DEBUG) {
+	    drawBoundingBox(position, width, height, 5);
+	}
+    }
+
+    private void drawBoundingBox(Position position, float width, float height, float depth) {
+	glLineWidth(1);
+	glColor3f(0.0f, 1.0f, 0.0f);
+	glBegin(GL_LINES);
+	{
+	    glVertex3f(position.position.x, position.position.y, depth);
+	    glVertex3f(position.position.x + width, position.position.y, depth);
+
+	    glVertex3f(position.position.x, position.position.y, depth);
+	    glVertex3f(position.position.x, position.position.y + height, depth);
+
+	    glVertex3f(position.position.x, position.position.y + height, depth);
+	    glVertex3f(position.position.x + width, position.position.y + height, depth);
+
+	    glVertex3f(position.position.x + width, position.position.y, depth);
+	    glVertex3f(position.position.x + width, position.position.y + height, depth);
+	}
+	glEnd();
+    }
+
+    private void drawDebugLines(int width, int height, int depth, int spacing) {
+	glLineWidth(1.0f);
+	glColor3f(0.8f, 0.8f, 0.8f);
+	glBegin(GL_LINES);
+	{
+	    for (int i = 0; i <= width; i += spacing) {
+		for (int j = 0; j <= height; j += spacing) {
+		    glVertex3f(0, i, j);
+		    glVertex3f(width, i, j);
+
+		    glVertex3f(i, 0, j);
+		    glVertex3f(i, height, j);
+
+		    glVertex3f(i, j, 0);
+		    glVertex3f(i, j, depth);
+		}
+	    }
 	}
 	glEnd();
     }

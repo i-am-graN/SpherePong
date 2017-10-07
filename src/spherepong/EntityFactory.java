@@ -27,7 +27,7 @@ public class EntityFactory {
 
     public Entity createBall(float x, float y, float z) {
 	Entity entity = this.world.createEntity();
-	entity.edit().add(new BoundingBox(BALL_DIAMETER, BALL_DIAMETER)).add(new Position(x, y, z)).add(new Renderable(BALL_DIAMETER, BALL_DIAMETER)).add(new Velocity(2, 2, 0));
+	entity.edit().add(new BoundingBox(BALL_DIAMETER, BALL_DIAMETER)).add(new Position(x, y, z)).add(new Renderable(BALL_DIAMETER, BALL_DIAMETER)).add(new Velocity(0.5f, 1, 0));
 	this.world.getSystem(GroupManager.class).add(entity, ENTITY_BALL);
 	return entity;
     }

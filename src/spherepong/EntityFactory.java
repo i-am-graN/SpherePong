@@ -1,10 +1,14 @@
 package spherepong;
 
+import java.util.Random;
+
 import com.artemis.Entity;
 import com.artemis.World;
 import com.artemis.managers.GroupManager;
 
+import spherepong.components.Acceleration;
 import spherepong.components.BoundingBox;
+import spherepong.components.Mass;
 import spherepong.components.PlayerAI;
 import spherepong.components.Position;
 import spherepong.components.Renderable;
@@ -55,6 +59,38 @@ public class EntityFactory {
 	float xPos = SpherePong.WINDOW_WIDTH - PLAYER_WIDTH;
 	float yPos = SpherePong.WINDOW_HEIGHT / 2 - PLAYER_LENGTH / 2;
 	entity.edit().add(new BoundingBox(PLAYER_WIDTH, PLAYER_LENGTH)).add(new Renderable(PLAYER_WIDTH, PLAYER_LENGTH)).add(new Position(xPos, yPos, 0)).add(new Velocity(0, 0, 0)).add(new PlayerAI());
+	return entity;
+    }
+    public Entity createStationaryNode(int mass) {
+	Entity entity = this.world.createEntity();
+	Random random = new Random();
+//	float xPos = random.nextInt(500);
+//	float yPos = random.nextInt(500);
+	int size = mass*5;
+	entity.edit()
+		.add(new BoundingBox(size, size))
+		.add(new Renderable(size, size))
+		.add(new Mass(mass))
+//		.add(new Position(xPos, yPos, 0))
+		.add(new Position(SpherePong.WINDOW_WIDTH/2, SpherePong.WINDOW_HEIGHT, 0))
+		.add(new Velocity(0, 0, 0));
+	return entity;
+    }
+
+    public Entity createAccelerationNode(int mass) {
+	Entity entity = this.world.createEntity();
+	Random random = new Random();
+	float xPos = random.nextInt(500);
+	float yPos = random.nextInt(500);
+	int size = mass*5;
+	entity.edit()
+		.add(new BoundingBox(size, size))
+		.add(new Renderable(size, size))
+		.add(new Mass(mass))
+		.add(new Position(xPos, yPos, 0))
+//		.add(new Position(0, 0, 0))
+		.add(new Velocity(0, 0, 0))
+		.add(new Acceleration(0, 0, 0));
 	return entity;
     }
 }

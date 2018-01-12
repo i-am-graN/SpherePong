@@ -1,15 +1,19 @@
 package spherepong;
 
+import com.artemis.Entity;
 import com.artemis.World;
 import com.artemis.WorldConfiguration;
 import com.artemis.WorldConfigurationBuilder;
-import com.artemis.managers.GroupManager;
 
+import spherepong.components.Spring;
 import spherepong.exceptions.SystemExitException;
+import spherepong.systems.RepulsionSystem;
+import spherepong.systems.AttractionSystem;
 import spherepong.systems.CollisionSystem;
+import spherepong.systems.GravitySystem;
 import spherepong.systems.MovementSystem;
-import spherepong.systems.PlayerAISystem;
 import spherepong.systems.RenderingSystem;
+import spherepong.systems.SpringSystem;
 
 public class SpherePong extends Thread {
 
@@ -23,27 +27,27 @@ public class SpherePong extends Thread {
     public void initialize() {
 
 	WorldConfiguration config = new WorldConfigurationBuilder()
-		.with(new GroupManager())
-		.with(new CollisionSystem())
-		.with(new PlayerAISystem())
+		// .with(new GroupManager())
+//		 .with(new CollisionSystem())
+		// .with(new PlayerAISystem())
 		.with(new MovementSystem())
-		.with(new RenderingSystem(WINDOW_WIDTH, WINDOW_HEIGHT, "SpherePong"))
-		.build();
+//		.with(new AttractionSystem(5000, 0.5f))
+		.with(new RepulsionSystem(5000, 0.5f))
+		.with(new GravitySystem(0.3f))
+		.with(new SpringSystem())
+		.with(new RenderingSystem(WINDOW_WIDTH, WINDOW_HEIGHT, "SpherePong")).build();
 
 	this.world = new World(config);
 
 	EntityFactory factory = new EntityFactory(this.world);
 
-	// Ball
-	factory.createBall(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2, 0);
-
-	// Walls
-	factory.createTopWall();
-	factory.createBottomWall();
+	Entity previousEntity = factory.createStationaryNode(20);
 	
-	// Players
-	factory.createPlayerA();
-	factory.createPlayerB();
+	for (int i = 0; i < 20; ++i) {
+	    Entity currentEntity = factory.createAccelerationNode(4);
+	    this.world.createEntity().edit().add(new Spring(currentEntity.getId(), previousEntity.getId()));
+	    previousEntity = currentEntity;
+	}
     }
 
     @Override

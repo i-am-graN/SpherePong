@@ -63,6 +63,7 @@ import spherepong.Camera;
 import spherepong.SpherePong;
 import spherepong.components.Position;
 import spherepong.components.Renderable;
+import spherepong.components.Spring;
 import spherepong.exceptions.SystemExitException;
 
 public class RenderingSystem extends EntitySystem {
@@ -121,8 +122,7 @@ public class RenderingSystem extends EntitySystem {
 	    GLFWVidMode vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
 
 	    // Center the window
-	    glfwSetWindowPos(this.window, (vidmode.width() - pWidth.get(0)) / 2,
-		    (vidmode.height() - pHeight.get(0)) / 2);
+	    glfwSetWindowPos(this.window, (vidmode.width() - pWidth.get(0)) / 2, (vidmode.height() - pHeight.get(0)) / 2);
 	} // the stack frame is popped automatically
 
 	// Make the OpenGL context current
@@ -167,9 +167,16 @@ public class RenderingSystem extends EntitySystem {
 	drawDebugLines(SpherePong.WINDOW_WIDTH, SpherePong.WINDOW_HEIGHT, SpherePong.WINDOW_WIDTH, 100);
 
 	for (Entity e : this.getEntities()) {
-	    Position position = e.getComponent(Position.class);
-	    Renderable renderable = e.getComponent(Renderable.class);
-	    drawRectangle(position, renderable.width, renderable.height);
+//	    Spring spring = e.getComponent(Spring.class);
+//	    if (spring != null) {
+//		Position posA = spring.a.getComponent(Position.class);
+//		Position posB = spring.b.getComponent(Position.class);
+//		drawLine(posA, posB);
+//	    } else {
+		Position position = e.getComponent(Position.class);
+		Renderable renderable = e.getComponent(Renderable.class);
+		drawRectangle(position, renderable.width, renderable.height);
+//	    }
 	}
 
 	// Swap the color buffers
@@ -211,6 +218,17 @@ public class RenderingSystem extends EntitySystem {
 	if (DEBUG) {
 	    drawBoundingBox(position, width, height, 5);
 	}
+    }
+
+    private void drawLine(Position positionA, Position positionB) {
+	glLineWidth(1);
+	glColor3f(0.0f, 1.0f, 0.0f);
+	glBegin(GL_LINE);
+	{
+	    glVertex3f(positionA.position.x, positionA.position.y, positionA.position.z);
+	    glVertex3f(positionB.position.x, positionB.position.y, positionB.position.z);
+	}
+	glEnd();
     }
 
     private void drawBoundingBox(Position position, float width, float height, float depth) {

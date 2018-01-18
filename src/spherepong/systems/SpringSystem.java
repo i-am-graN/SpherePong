@@ -15,9 +15,9 @@ import spherepong.components.Velocity;
 
 public class SpringSystem extends EntitySystem {
 
-    private static final float RESTLENGTH = 10;
-    private static final float DAMPING_COEFFICENT = 0.2f;
-    private static final float STIFFNESS = 0.1f;
+    private static final float RESTLENGTH = 50;
+    private static final float DAMPING_COEFFICENT = 0.1f;
+    private static final float STIFFNESS = 0.5f;
 
     public SpringSystem() {
 	super(Aspect.all(Spring.class));

@@ -80,15 +80,14 @@ public class EntityFactory {
     public Entity createAccelerationNode(int mass) {
 	Entity entity = this.world.createEntity();
 	Random random = new Random();
-	float xPos = random.nextInt(500);
-	float yPos = random.nextInt(500);
+	float xPos = random.nextInt(1000);
+	float yPos = random.nextInt(1000);
 	int size = mass*5;
 	entity.edit()
 		.add(new BoundingBox(size, size))
 		.add(new Renderable(size, size))
 		.add(new Mass(mass))
 		.add(new Position(xPos, yPos, 0))
-//		.add(new Position(0, 0, 0))
 		.add(new Velocity(0, 0, 0))
 		.add(new Acceleration(0, 0, 0));
 	return entity;

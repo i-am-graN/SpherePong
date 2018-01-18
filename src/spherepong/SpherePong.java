@@ -5,6 +5,8 @@ import com.artemis.World;
 import com.artemis.WorldConfiguration;
 import com.artemis.WorldConfigurationBuilder;
 
+import spherepong.components.Position;
+import spherepong.components.Renderable;
 import spherepong.components.Spring;
 import spherepong.exceptions.SystemExitException;
 import spherepong.systems.RepulsionSystem;
@@ -28,25 +30,33 @@ public class SpherePong extends Thread {
 
 	WorldConfiguration config = new WorldConfigurationBuilder()
 		// .with(new GroupManager())
-//		 .with(new CollisionSystem())
+		// .with(new CollisionSystem())
 		// .with(new PlayerAISystem())
 		.with(new MovementSystem())
-//		.with(new AttractionSystem(5000, 0.5f))
+//		.with(new AttractionSystem(5000, 0.1f))
 		.with(new RepulsionSystem(5000, 0.5f))
-		.with(new GravitySystem(0.3f))
+//		.with(new GravitySystem(1.0f))
 		.with(new SpringSystem())
-		.with(new RenderingSystem(WINDOW_WIDTH, WINDOW_HEIGHT, "SpherePong")).build();
+		.with(new RenderingSystem(WINDOW_WIDTH, WINDOW_HEIGHT, "SpherePong"))
+		.build();
 
 	this.world = new World(config);
 
 	EntityFactory factory = new EntityFactory(this.world);
+	Entity rootNode = factory.createStationaryNode(20);
+	createChildren(factory, rootNode, 0, 6);
+    }
 
-	Entity previousEntity = factory.createStationaryNode(20);
-	
-	for (int i = 0; i < 20; ++i) {
-	    Entity currentEntity = factory.createAccelerationNode(4);
-	    this.world.createEntity().edit().add(new Spring(currentEntity.getId(), previousEntity.getId()));
-	    previousEntity = currentEntity;
+    private void createChildren(EntityFactory factory, Entity parent, int depth, int maxDepth) {
+	depth += 1;
+	if (depth > maxDepth) {
+
+	} else {
+	    for (int i = 0; i < 2; ++i) {
+		Entity child = factory.createAccelerationNode(2 * maxDepth - depth);
+		this.world.createEntity().edit().add(new Spring(child.getId(), parent.getId())).add(new Renderable()).add(new Position());
+		createChildren(factory, child, depth, maxDepth);
+	    }
 	}
     }
 

@@ -146,9 +146,9 @@ public class RenderingSystem extends EntitySystem {
     }
 
     private void initCamera() {
-	camera = new Camera(70, SpherePong.WINDOW_WIDTH / SpherePong.WINDOW_HEIGHT, 0.3f, 1000);
+	camera = new Camera(70, SpherePong.WINDOW_WIDTH / SpherePong.WINDOW_HEIGHT, 0.3f, 2000);
 	camera.initialize();
-	camera.setPosition(new Vector3f(SpherePong.WINDOW_WIDTH / 2, SpherePong.WINDOW_HEIGHT / 2, 800));
+	camera.setPosition(new Vector3f(SpherePong.WINDOW_WIDTH / 2, SpherePong.WINDOW_HEIGHT / 2, 1000));
 	camera.setRotation(new Vector3f(0, 0, 0));
 	camera.useView();
     }
@@ -164,19 +164,19 @@ public class RenderingSystem extends EntitySystem {
 
 	// Clear the frame buffer
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	drawDebugLines(SpherePong.WINDOW_WIDTH, SpherePong.WINDOW_HEIGHT, SpherePong.WINDOW_WIDTH, 100);
+	// drawDebugLines(SpherePong.WINDOW_WIDTH, SpherePong.WINDOW_HEIGHT, SpherePong.WINDOW_WIDTH, 100);
 
 	for (Entity e : this.getEntities()) {
-//	    Spring spring = e.getComponent(Spring.class);
-//	    if (spring != null) {
-//		Position posA = spring.a.getComponent(Position.class);
-//		Position posB = spring.b.getComponent(Position.class);
-//		drawLine(posA, posB);
-//	    } else {
-		Position position = e.getComponent(Position.class);
-		Renderable renderable = e.getComponent(Renderable.class);
+	    Position position = e.getComponent(Position.class);
+	    Renderable renderable = e.getComponent(Renderable.class);
+	    Spring spring = e.getComponent(Spring.class);
+	    if (spring != null) {
+		Position posA = e.getWorld().getEntity(spring.aID).getComponent(Position.class);
+		Position posB = e.getWorld().getEntity(spring.bID).getComponent(Position.class);
+		drawLine(posA, posB);
+	    } else {
 		drawRectangle(position, renderable.width, renderable.height);
-//	    }
+	    }
 	}
 
 	// Swap the color buffers
@@ -200,12 +200,12 @@ public class RenderingSystem extends EntitySystem {
 	glBegin(GL_QUADS);
 	{
 	    // Just testing adding a layer to see depth
-	    float depth = -100;
-	    glColor3f(0.0f, 0.0f, 0.8f);
-	    glVertex3f(position.position.x, position.position.y, depth);
-	    glVertex3f(position.position.x, position.position.y + height, depth);
-	    glVertex3f(position.position.x + width, position.position.y + height, depth);
-	    glVertex3f(position.position.x + width, position.position.y, depth);
+	    // float depth = -100;
+	    // glColor3f(0.0f, 0.0f, 0.8f);
+	    // glVertex3f(position.position.x, position.position.y, depth);
+	    // glVertex3f(position.position.x, position.position.y + height, depth);
+	    // glVertex3f(position.position.x + width, position.position.y + height, depth);
+	    // glVertex3f(position.position.x + width, position.position.y, depth);
 
 	    glColor3f(0.0f, 0.0f, 1.0f);
 	    glVertex3f(position.position.x, position.position.y, 0);
@@ -223,7 +223,7 @@ public class RenderingSystem extends EntitySystem {
     private void drawLine(Position positionA, Position positionB) {
 	glLineWidth(1);
 	glColor3f(0.0f, 1.0f, 0.0f);
-	glBegin(GL_LINE);
+	glBegin(GL_LINES);
 	{
 	    glVertex3f(positionA.position.x, positionA.position.y, positionA.position.z);
 	    glVertex3f(positionB.position.x, positionB.position.y, positionB.position.z);
